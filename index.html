@@ -1,1 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vortex! OS v1</title>
+  <!-- Ícones do Google Material Symbols -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <style>
+    :root {
+      --bg-wallpaper: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      --font-main: 'Segoe UI', Roboto, sans-serif;
+    }
 
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: #121212;
+      font-family: var(--font-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #fff;
+    }
+
+    /* Moldura do Smartphone */
+    .phone-container {
+      width: 380px;
+      height: 760px;
+      background: #000;
+      border-radius: 40px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 0 12px #222;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Barra de Status */
+    .status-bar {
+      height: 30px;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 600;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+    }
+
+    .status-icons {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .status-icons .material-symbols-outlined {
+      font-size: 16px;
+    }
+
+    /* Tela do SO */
+    .screen {
+      flex: 1;
+      background: var(--bg-wallpaper);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px 15px 10px;
+    }
+
+    /* Widget de Relógio Central */
+    .widget-clock {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .widget-clock h1 {
+      font-size: 54px;
+      font-weight: 300;
+      letter-spacing: -1px;
+    }
+
+    .widget-clock p {
+      font-size: 14px;
+      opacity: 0.8;
+      text-transform: capitalize;
+    }
+
+    /* Grid de Aplicativos */
+    .app-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px 10px;
+      margin-top: auto;
+      margin-bottom: 20px;
+    }
+
+    .app-icon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .app-icon:active {
+      transform: scale(0.88);
+    }
+
+    .icon-box {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    .icon-box .material-symbols-outlined {
+      font-size: 28px;
+      color: #fff;
+    }
+
+    .app-name {
+      font-size: 11px;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    }
+
+    /* Dock Inferior */
+    .dock {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(15px);
+      border-radius: 24px;
+      padding: 10px 15px;
+      display: flex;
+      justify-content: space-around;
+    }
+
+    /* Janela do App (Modal Interno) */
+    .app-window {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #1e1e1e;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+    }
+
+    .app-window.active {
+      transform: translateY(0);
+    }
+
+    .app-header {
+      height: 50px;
+      background: #282828;
+      display: flex;
+      align-items: center;
+      padding: 0 15px;
+      font-weight: bold;
+    }
+
+    .app-body {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    /* Barra de Navegação Android */
+    .nav-bar {
+      height: 40px;
+      background: #000;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 30;
+    }
+
+    .nav-btn {
+      color: #ccc;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 5px 20px;
+    }
+
+    .nav-btn:active {
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="phone-container">
+    <!-- Barra de Status -->
+    <div class="status-bar">
+      <span id="status-time">00:00</span>
+      <div class="status-icons">
+        <span class="material-symbols-outlined">wifi</span>
+        <span class="material-symbols-outlined">signal_cellular_alt</span>
+        <span class="material-symbols-outlined">battery_full</span>
+      </div>
+    </div>
+
+    <!-- Tela do Vortex! -->
+    <div class="screen">
+      <!-- Widget de Relógio -->
+      <div class="widget-clock">
+        <h1 id="clock-time">00:00</h1>
+        <p id="clock-date">Carregando data...</p>
+      </div>
+
+      <!-- Grid de Apps Principais -->
+      <div class="app-grid">
+        <div class="app-icon" onclick="openApp('Vortex Store', 'storefront', 'Bem-vindo à loja de aplicativos do Vortex! Em breve com downloads reais de webapps.')">
+          <div class="icon-box" style="background: linear-gradient(45deg, #00c6ff, #0072ff);">
+            <span class="material-symbols-outlined">storefront</span>
+          </div>
+          <span class="app-name">V-Store</span>
+        </div>
+
+        <div class="app-icon" onclick="openApp('Calculadora', 'calculate', 'Calculadora basica em desenvolvimento para a v2.')">
+          <div class="icon-box" style="background: linear-gradient(45deg, #f7971e, #ffd200);">
+            <span class="material-symbols-outlined">calculate</span>
+          </div>
+          <span class="app-name">Calculadora</span>
+        </div>
+
+        <div class="app-icon" onclick="openApp('Bloco de Notas', 'edit_note', 'Seu espaço para anotações rápidas no Vortex OS.')">
+          <div class="icon-box" style="background: linear-gradient(45deg, #56ab2f, #a8e063);">
+            <span class="material-symbols-outlined">edit_note</span>
+          </div>
+          <span class="app-name">Notas</span>
+        </div>
+
+        <div class="app-icon" onclick="openApp('Configurações', 'settings', 'Vortex OS v1.0<br>Desenvolvido para GitHub Pages.<br>Status: Protótipo Funcional.')">
+          <div class="icon-box" style="background: linear-gradient(45deg, #3a7bd5, #3a6073);">
+            <span class="material-symbols-outlined">settings</span>
+          </div>
+          <span class="app-name">Ajustes</span>
+        </div>
+      </div>
+
+      <!-- Dock Fixo -->
+      <div class="dock">
+        <div class="app-icon" onclick="openApp('Telefone', 'call', 'Discador telefônico do Vortex OS.')">
+          <div class="icon-box" style="background: #2e7d32;">
+            <span class="material-symbols-outlined">call</span>
+          </div>
+        </div>
+
+        <div class="app-icon" onclick="openApp('Navegador Web', 'public', 'Navegador Vortex Web - pronto para navegar em breve!')">
+          <div class="icon-box" style="background: #1565c0;">
+            <span class="material-symbols-outlined">public</span>
+          </div>
+        </div>
+
+        <div class="app-icon" onclick="openApp('Câmera', 'photo_camera', 'A câmera precisa de permissão de mídia (recurso v2).')">
+          <div class="icon-box" style="background: #c62828;">
+            <span class="material-symbols-outlined">photo_camera</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Janela do Aplicativo Aberto -->
+      <div class="app-window" id="app-window">
+        <div class="app-header">
+          <span id="app-title">Aplicativo</span>
+        </div>
+        <div class="app-body" id="app-content">
+          Conteúdo do aplicativo...
+        </div>
+      </div>
+    </div>
+
+    <!-- Barra de Navegação Inferior -->
+    <div class="nav-bar">
+      <span class="material-symbols-outlined nav-btn" onclick="closeApp()">arrow_back_ios</span>
+      <span class="material-symbols-outlined nav-btn" onclick="closeApp()">circle</span>
+      <span class="material-symbols-outlined nav-btn" onclick="toggleRecents()">check_box_outline_blank</span>
+    </div>
+  </div>
+
+  <script>
+    // Atualização do Relógio e Data
+    function updateClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      
+      const timeString = `${hours}:${minutes}`;
+      document.getElementById('status-time').textContent = timeString;
+      document.getElementById('clock-time').textContent = timeString;
+
+      const options = { weekday: 'long', day: 'numeric', month: 'long' };
+      document.getElementById('clock-date').textContent = now.toLocaleDateString('pt-BR', options);
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Sistema de Abertura e Fechamento de Apps
+    const appWindow = document.getElementById('app-window');
+    const appTitle = document.getElementById('app-title');
+    const appContent = document.getElementById('app-content');
+
+    function openApp(title, icon, text) {
+      appTitle.textContent = title;
+      appContent.innerHTML = `<p>${text}</p>`;
+      appWindow.classList.add('active');
+    }
+
+    function closeApp() {
+      appWindow.classList.remove('active');
+    }
+
+    function toggleRecents() {
+      alert("Vortex OS: Alternador de tarefas recentes em breve!");
+    }
+  </script>
+</body>
+</html>
